@@ -7,6 +7,7 @@ import ContactList from './ContactList';
 import { nanoid } from 'nanoid';
 import Home from './Home';
 import Details from './ContactDetails';
+import api from '../api/contacts';
 
 function App() {
   const [contacts, setContacts] = useState([]);
@@ -20,15 +21,32 @@ function App() {
     setContacts([...contacts, { id: nanoid(), ...contact }]);
   };
 
-  //Fetch contacts from local storage
+  //handler for fetching data from JSON DB
+  const contactsFromDB = async () => {
+    const fetched = await api.get("/contacts");
+    return fetched.data;
+  }
+
+
   useEffect(() => {
-    const fetchedContacts = JSON.parse(localStorage.getItem(lockey));
-    if (fetchedContacts)
-      if (fetchedContacts.length > 0) setContacts(fetchedContacts);
+    //Fetch contacts from local storage
+    // const fetchedContacts = JSON.parse(localStorage.getItem(lockey));
+    // if (fetchedContacts)
+    //   if (fetchedContacts.length > 0) setContacts(fetchedContacts);
+
+    //Fetch contacts for json db
+    const fetchedContacts = async () => {
+      const fetched = await contactsFromDB();
+      if (fetched)
+        if (fetched.length > 0) setContacts(fetched);
+    }
+    fetchedContacts();
   }, []);
 
   //save contacts to local storage
-  useEffect(() => { localStorage.setItem(lockey, JSON.stringify(contacts)) }, [contacts]);
+  useEffect(() => {
+    // localStorage.setItem(lockey, JSON.stringify(contacts));
+  }, [contacts]);
 
   //handler for deleting a contact
   const deleteContact = (id) => {
